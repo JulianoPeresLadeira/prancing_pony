@@ -2,6 +2,7 @@ use std::fmt::{Display, Formatter, Result};
 use crate::moves::Move;
 
 #[derive(Copy,Clone,Debug)]
+
 pub struct Position(pub i16, pub i16);
 
 impl Position {

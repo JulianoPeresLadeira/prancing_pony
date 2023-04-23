@@ -1,6 +1,9 @@
+use std::time::Instant;
+
 use crate::matrix::Matrix;
 use crate::position::Position;
 use crate::moves::MOVES;
+
 pub struct TourInput {
     pub size_x: u8,
     pub size_y: u8,
@@ -12,9 +15,21 @@ pub enum TourResult {
     Solution(Tour)
 }
 
+impl TourResult {
+    pub fn has_solution(&self) -> bool {
+        match self {
+            TourResult::NoSolution => false,
+            TourResult::Solution(_) => true
+        }
+    }
+}
+///
+/// Stores the result of the tour itself, with a list of the positions traversed in a vector, as well as some additional information about the calculation of the result
+///
 pub struct Tour {
-    pub position_history: Vec<Position>,
-    pub times_backtracked: u32
+    pub position_history: Vec<(i16, i16)>,
+    pub times_backtracked: u32,
+    pub calculation_time: u128
 }
 
 pub struct TourGuide {
@@ -96,20 +111,25 @@ impl TourGuide {
     }
 
     fn run_tour(inp: TourInput) -> TourResult {
+        let start = Instant::now();
         let mut guide = TourGuide::new(inp);
         guide.calc_tour();
+        let duration = start.elapsed();
 
         TourResult::Solution(
             Tour {
-                position_history: guide.position_history, 
-                times_backtracked: guide.times_backtracked
+                position_history: guide.position_history.iter().map(|p| p.to_tuple()).collect(), 
+                times_backtracked: guide.times_backtracked,
+                calculation_time: duration.as_nanos()
             }
         )
     }
 }
 
 fn has_solution(size_x: u8, size_y: u8) -> bool {
-
+    if size_x == 0 || size_y == 0 {
+        return false;
+    }
     if size_x > size_y {
         return has_solution(size_y, size_x);
     }
@@ -121,6 +141,33 @@ fn has_solution(size_x: u8, size_y: u8) -> bool {
     !(both_are_odd || forbidden_x_values || forbidden_y_value_for_x)
 }
 
+
+/// Finds solution for the given input
+/// 
+/// # Examples
+/// 
+/// ```
+/// let tour_input = prancing_pony::TourInput {
+///     size_x: 3,
+///     size_y: 10,
+///     starting_position: (0,0)
+/// };
+/// 
+/// let result = prancing_pony::find_solution(tour_input);
+/// assert_eq!(result.has_solution(), true)
+/// ```
+/// 
+/// ```
+/// let tour_input = prancing_pony::TourInput {
+///     size_x: 4,
+///     size_y: 4,
+///     starting_position: (0,0)
+/// };
+/// 
+/// let result = prancing_pony::find_solution(tour_input);
+/// assert_eq!(result.has_solution(), false);
+/// ```
+/// 
 pub fn find_solution(tour: TourInput) -> TourResult {
     
     if !has_solution(tour.size_x, tour.size_y) {
