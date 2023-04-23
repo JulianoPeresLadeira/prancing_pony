@@ -4,12 +4,18 @@ use crate::matrix::Matrix;
 use crate::position::Position;
 use crate::moves::MOVES;
 
+///
+/// Input for the tour with the sizes of the board and starting position
+///
 pub struct TourInput {
     pub size_x: u8,
     pub size_y: u8,
     pub starting_position: (i16, i16)
 }
 
+///
+/// Enum with the possible outputs of the calculation
+///
 pub enum TourResult {
     NoSolution,
     Solution(Tour)
@@ -24,7 +30,7 @@ impl TourResult {
     }
 }
 ///
-/// Stores the result of the tour itself, with a list of the positions traversed in a vector, as well as some additional information about the calculation of the result
+/// Stores the result of the tour itself, with a list of the positions traversed in a vector, how many times backtracking occurred, and how long, in nanoseconds, the algorithm took to run
 ///
 pub struct Tour {
     pub position_history: Vec<(i16, i16)>,
