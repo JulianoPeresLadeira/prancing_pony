@@ -15,6 +15,9 @@ pub struct TourInput {
 
 ///
 /// Enum with the possible outputs of the calculation
+/// * NoSolution: For the board size given, there is no possible solution to the Knight's Tour 
+/// * InvalidParameters: Starting position is not possible in given board
+/// * Solution: Wraps an object with the solution to the Tour
 ///
 pub enum TourResult {
     NoSolution,
