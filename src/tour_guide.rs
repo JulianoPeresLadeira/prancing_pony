@@ -18,6 +18,7 @@ pub struct TourInput {
 ///
 pub enum TourResult {
     NoSolution,
+    InvalidParameters,
     Solution(Tour)
 }
 
@@ -25,6 +26,7 @@ impl TourResult {
     pub fn has_solution(&self) -> bool {
         match self {
             TourResult::NoSolution => false,
+            TourResult::InvalidParameters => false,
             TourResult::Solution(_) => true
         }
     }
@@ -132,6 +134,10 @@ impl TourGuide {
     }
 }
 
+fn has_invalid_parameters(tour: &TourInput) -> bool {
+    tour.starting_position.0 as u8 >= tour.size_x || tour.starting_position.1 as u8 >= tour.size_y
+}
+
 fn has_solution(size_x: u8, size_y: u8) -> bool {
     if size_x == 0 || size_y == 0 {
         return false;
@@ -175,7 +181,9 @@ fn has_solution(size_x: u8, size_y: u8) -> bool {
 /// ```
 /// 
 pub fn find_solution(tour: TourInput) -> TourResult {
-    
+    if has_invalid_parameters(&tour) {
+        return TourResult::InvalidParameters;
+    }
     if !has_solution(tour.size_x, tour.size_y) {
         return TourResult::NoSolution;
     }
